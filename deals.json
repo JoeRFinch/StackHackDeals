@@ -1,8 +1,19 @@
 [
   {
     "store": "Walmart",
-    "title": "Tide Pods BOGO",
-    "link": "#",
-    "notes": "Buy one get one free. Clip digital coupon before checkout."
+    "title": "Tide Pods are $2.47 each, must buy 2",
+    "breakdown": [
+      "OOP: $13.94 = $6.97 x2 Tide Pods 16ct",
+      "SwagBucks - 600 SB for 2 = $6.00",
+      "Checkout 51 - $1.50 each x2 = $3.00",
+      "13.94 - 6.00 - 3.00 = $4.94/2 = <b>$2.47 each</b>"
+    ],
+    "notes": [
+      "Can buy 4 on the same receipt. Check to make sure you haven't redeemed it yet this month.",
+      "Same deal should exist on Tada, InboxDollars, MyPoints, and BeFrugal.",
+      "Make sure the rebate amount is the same, and you will only get one redemption on Checkout 51.",
+      "InboxDollars - $5.00 for 2",
+      "Others - Same as Swagbucks"
+    ]
   }
 ]
