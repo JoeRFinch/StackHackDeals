@@ -19,7 +19,7 @@ fetch("deals.json")
       </li>
     `).join("");
   });
-  .catch(err => console.error("Error loading deals.json", err));
+  catch(err => console.error("Error loading deals.json", err));
 
 
 const comments = JSON.parse(localStorage.getItem("comments") || "[]");
