@@ -1,69 +1,101 @@
-// --- Deals loading, sorting, rendering with links, images, and search ---
-
 let deals = [];
+let referrals = [];
 
-function renderDeals(filterText = "") {
-  const dealList = document.getElementById("dealList");
-
-  // Filter deals by search text (case insensitive)
-  const filteredDeals = deals.filter(d => {
-    const combinedText = `${d.store} ${d.title} ${d.breakdown.join(" ")} ${d.notes.join(" ")}`.toLowerCase();
-    return combinedText.includes(filterText.toLowerCase());
+function sanitizeHTML(str) {
+  return str.replace(/[&<>"']/g, function(m) {
+    return ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    })[m];
   });
+}
 
-  // Sort by date desc, then store asc
-  filteredDeals.sort((a, b) => {
-    if (a.date === b.date) {
-      return a.store.localeCompare(b.store);
-    }
-    return b.date.localeCompare(a.date);
-  });
-
-  dealList.innerHTML = filteredDeals.map(d => `
+// Render a list of deals to a UL element
+function renderDealList(dealArray, containerId, showFullDetails = false) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = dealArray.map(d => `
     <li class="deal-item">
-      <div class="deal-store" style="font-weight:bold; font-size:1.2em;">${d.store}</div>
-      <div class="deal-title"><strong>${d.title}</strong></div>
+      <div class="deal-store" style="font-weight:bold; font-size:1.1em;">${sanitizeHTML(d.store)}</div>
+      <div class="deal-title"><strong>${sanitizeHTML(d.title)}</strong></div>
       ${d.productLink ? `<a href="${d.productLink}" target="_blank" rel="noopener noreferrer">View Product</a>` : ""}
-      ${d.image ? `<div><img src="${d.image}" alt="${d.title}" style="max-width:200px; margin: 5px 0;" onerror="this.style.display='none'"/></div>` : ""}
+      ${d.image ? `<div><img src="${d.image}" alt="${sanitizeHTML(d.title)}" style="max-width:200px; margin:5px 0;" onerror="this.style.display='none'"/></div>` : ""}
       <ul class="deal-breakdown">
-        ${d.breakdown.map(line => `<li>${line.includes('$') ? line.replace(/(\$\d+(\.\d+)?)/g, '<strong>$1</strong>') : line}</li>`).join("")}
+        ${d.breakdown.map(line => `<li>${line.includes('$') ? line.replace(/(\$\d+(\.\d+)?)/g, '<strong>$1</strong>') : sanitizeHTML(line)}</li>`).join("")}
       </ul>
-      <ul class="deal-notes">
-        ${d.notes.map(n => `<li>${n}</li>`).join("")}
-      </ul>
+      ${showFullDetails ? `<ul class="deal-notes">${d.notes.map(n => `<li>${sanitizeHTML(n)}</li>`).join("")}</ul>` : ""}
     </li>
   `).join("");
 }
 
-// Fetch deals.json
-fetch("deals.json")
-  .then(res => res.json())
-  .then(data => {
-    deals = data;
-    renderDeals();
-  })
-  .catch(err => console.error("Error loading deals.json", err));
-
-// Search input for deals
-const dealSearchInput = document.getElementById("dealSearchInput");
-if (dealSearchInput) {
-  dealSearchInput.addEventListener("input", () => renderDeals(dealSearchInput.value));
+// Sort deals within a category by dateAdded desc (newest first)
+function sortByDateDesc(arr) {
+  return arr.sort((a, b) => b.dateAdded.localeCompare(a.dateAdded));
 }
 
-// --- Referral links load with new tab ---
+// Build the main page deals view
+function buildMainPage() {
+  // 1. New Money Makers (across all stores)
+  const newMM = deals.filter(d => d.moneyMaker && d.status === 0);
+  const sortedNewMM = sortByDateDesc(newMM);
+  renderDealList(sortedNewMM, "newMoneyMakersList");
 
-fetch("referrals.json")
-  .then(res => res.json())
-  .then(referrals => {
-    const referralList = document.getElementById("referralList");
-    referralList.innerHTML = referrals
-      .map(r => `<li><a href="${r.url}" target="_blank" rel="noopener noreferrer">${r.name}</a></li>`)
-      .join("");
-  })
-  .catch(err => console.error("Error loading referrals.json", err));
+  // 2. Group deals by store for further rendering
+  const stores = [...new Set(deals.map(d => d.store))].sort();
 
-// --- Comments with nickname, edit, delete, char limit ---
+  const storeSections = document.getElementById("storeSections");
+  storeSections.innerHTML = ""; // clear before rendering
 
+  stores.forEach(store => {
+    // Filter Previous MM (status 1), sorted by date desc
+    const previousMM = sortByDateDesc(deals.filter(d => d.store === store && d.moneyMaker && d.status === 1));
+    // Filter New Non-MM (status 0, moneyMaker false)
+    const newNonMM = sortByDateDesc(deals.filter(d => d.store === store && !d.moneyMaker && d.status === 0));
+
+    const storeSectionHTML = `
+      <hr/>
+      <h3><a href="${store.toLowerCase().replace(/\s+/g, '')}.html">${sanitizeHTML(store)} Deals Page</a></h3>
+
+      ${previousMM.length > 0 ? `<h4>Previous Money Makers</h4><ul id="${store}PreviousMMList"></ul>` : ""}
+      ${newNonMM.length > 0 ? `<h4>New Deals</h4><ul id="${store}NewNonMMList"></ul>` : ""}
+    `;
+
+    storeSections.insertAdjacentHTML("beforeend", storeSectionHTML);
+
+    if (previousMM.length > 0) renderDealList(previousMM, `${store}PreviousMMList`);
+    if (newNonMM.length > 0) renderDealList(newNonMM, `${store}NewNonMMList`);
+  });
+}
+
+// Load referrals into #referralList
+function loadReferrals() {
+  fetch("referrals.json")
+    .then(res => res.json())
+    .then(data => {
+      referrals = data;
+      const referralList = document.getElementById("referralList");
+      referralList.innerHTML = referrals
+        .map(r => `<li><a href="${r.url}" target="_blank" rel="noopener noreferrer">${sanitizeHTML(r.name)}</a></li>`)
+        .join("");
+    })
+    .catch(err => console.error("Error loading referrals.json", err));
+}
+
+// Load deals and initialize main page
+function loadDealsAndInit() {
+  fetch("deals.json")
+    .then(res => res.json())
+    .then(data => {
+      deals = data;
+      buildMainPage();
+    })
+    .catch(err => console.error("Error loading deals.json", err));
+}
+
+// Comments stuff from your previous code (same as before)
 let comments = JSON.parse(localStorage.getItem("comments") || "[]");
 const commentSection = document.getElementById("commentSection");
 const postBtn = document.getElementById("postComment");
@@ -84,7 +116,6 @@ function renderComments() {
     </div>
   `).join("");
 
-  // Add event listeners for edit and delete buttons
   document.querySelectorAll(".edit-comment").forEach(button => {
     button.onclick = (e) => {
       const commentDiv = e.target.closest(".comment");
@@ -92,12 +123,10 @@ function renderComments() {
       const commentObj = comments.find(c => c.id === id);
       if (!commentObj) return;
 
-      // Replace comment text with editable textarea
       const textSpan = commentDiv.querySelector(".comment-text");
       textSpan.innerHTML = `<textarea class="edit-textarea" maxlength="300">${sanitizeHTML(commentObj.text)}</textarea>
         <br/><button class="save-edit">Save</button> <button class="cancel-edit">Cancel</button>`;
 
-      // Save button
       commentDiv.querySelector(".save-edit").onclick = () => {
         const newText = commentDiv.querySelector(".edit-textarea").value.trim();
         if (newText.length === 0 || newText.length > 300) {
@@ -109,14 +138,12 @@ function renderComments() {
         renderComments();
       };
 
-      // Cancel button
       commentDiv.querySelector(".cancel-edit").onclick = () => {
         renderComments();
       };
     };
   });
 
-  // Delete button
   document.querySelectorAll(".delete-comment").forEach(button => {
     button.onclick = (e) => {
       const commentDiv = e.target.closest(".comment");
@@ -135,7 +162,7 @@ postBtn.addEventListener("click", () => {
     alert("Comment must be 1-300 characters");
     return;
   }
-  const id = Date.now().toString(); // simple unique id
+  const id = Date.now().toString();
   comments.push({ id, name, text });
   saveComments();
   commentInput.value = "";
@@ -143,16 +170,6 @@ postBtn.addEventListener("click", () => {
   renderComments();
 });
 
-function sanitizeHTML(str) {
-  return str.replace(/[&<>"']/g, function(m) {
-    return ({
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#39;'
-    })[m];
-  });
-}
-
+loadDealsAndInit();
+loadReferrals();
 renderComments();
