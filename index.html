@@ -2,14 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Stack Hack Deals</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <nav class="topnav">
-    <a href="#moneymakers">Money Makers</a>
-    <a href="#stores">Stores</a>
+    <a href="#deals">Deals</a>
     <a href="#referrals">Referrals</a>
     <a href="#tips">Tips</a>
     <a href="#howto">How-Tos</a>
@@ -17,54 +16,42 @@
   </nav>
   <header>
     <h1>🧾 StackHack Deals</h1>
-    <p class="tagline">Please use my referral links below to sign up for rebate sites. This is a work in progress, please leave any questions or tips at the bottom. Tips and Tricks and Guides will be added soon.</p>
+    <p class="tagline">Please use my referral links below to sign up for rebate sites. This is a work in progress, please leave any questions or tips at the bottom.</p>
   </header>
 
-  <!-- MONEY MAKERS TOP PRIORITY -->
-  <section id="moneymakers" class="color-section green">
-    <h2>💰 Money Makers and High Value Rebates</h2>
-    <div id="moneyMakerList">
-      <!-- Money maker deals will be injected here -->
-    </div>
-  </section>
+  <main>
+    <section id="deals" class="color-section green">
+      <h2>💸 Money Makers - New (All Stores)</h2>
+      <ul id="newMoneyMakersList"></ul>
 
-  <!-- STORES SECTION -->
-  <section id="stores" class="color-section blue">
-    <h2>🏪 Store Deals (New and Previous)</h2>
-    <input id="dealSearchInput" type="search" placeholder="Search deals..." />
-    <p>Post new finds here. Format: store, product, deal summary, sites used, links, images.</p>
-    <div id="storeDealsContainer">
-      <!-- Store deals will be dynamically generated here -->
-    </div>
-  </section>
+      <hr/>
 
-  <section id="referrals" class="color-section blue">
-    <h2>🔗 Referral Links</h2>
-    <ul id="referralList">
-      <!-- Referral links will be loaded here -->
-    </ul>
-  </section>
+      <div id="storeSections"></div>
+    </section>
 
-  <section id="tips" class="color-section yellow">
-    <h2>💡 Tips & Warnings</h2>
-    <p>Stack deals carefully — check dates, clip digital coupons before checkout, and screenshot rebates. Rebates can vary from user to user, especially on Fetch and Ibotta. New Ibotta users usually have much better rebates than others. For example a new Ibotta user will usually have a lot of cereal deals for General Mills. Use these at Giant Eagle during a $5 off 5 deal when its on sale for $2.99 and combine with a 5% back credit card or PayPal and 15% back on Upside you can get cereal for under $1.00</p>
-    <br><br>
-    <p>I use a different e-mail for Swagbucks, InboxDollars, Mypoints, Tada, BeFrugal. I don't know if it matters but they are owned by the same company and "technically" you shouldn't repeat the same rebate. Also as these are the same parent company, you CAN NOT submit the same receipt to more than one of them. For example if there is a $7 rebate on Tyson Nuggets, and it can be redeemed 2x per week, in one shopping trip you can buy twelve bags of nuggets. Do this with three purchases, four bags on each receipt. One receipt each to Swagbucks, InboxDollars, and Mypoints. As long as they are separate receipts each site will give you back fourteen dollars.</p>
-    <p>One trick is to link your Swagbucks or MyPoints account to your Tada account and use their online receipt scanning to catch extra rebates that may have been missed when scanning manual, or sometimes it will glitch and double up.</p>
-  </section>
+    <section id="referrals" class="color-section blue">
+      <h2>🔗 Referral Links</h2>
+      <ul id="referralList"></ul>
+    </section>
 
-  <section id="howto" class="color-section orange">
-    <h2>📘 How-Tos</h2>
-    <p>Learn to combine store sales, cashback, and manufacturer coupons for max savings.</p>
-  </section>
+    <section id="tips" class="color-section yellow">
+      <h2>💡 Tips & Warnings</h2>
+      <!-- Your tips content here -->
+    </section>
 
-  <section id="qa" class="color-section gray">
-    <h2>💬 Questions & Answers</h2>
-    <div id="commentSection"></div>
-    <input id="nameInput" type="text" placeholder="Your name or nickname" maxlength="30" />
-    <textarea id="commentInput" placeholder="Ask a question or share a comment..." maxlength="300"></textarea>
-    <button id="postComment">Post</button>
-  </section>
+    <section id="howto" class="color-section orange">
+      <h2>📘 How-Tos</h2>
+      <!-- Your how-tos content here -->
+    </section>
+
+    <section id="qa" class="color-section gray">
+      <h2>💬 Questions & Answers</h2>
+      <div id="commentSection"></div>
+      <input id="nameInput" type="text" placeholder="Your name or nickname" maxlength="30" />
+      <textarea id="commentInput" placeholder="Ask a question or share a comment..." maxlength="300"></textarea>
+      <button id="postComment">Post</button>
+    </section>
+  </main>
 
   <footer>
     <p>© 2025 StackHack Deals</p>
