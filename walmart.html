@@ -44,25 +44,21 @@
           return;
         }
 
-        list.innerHTML = walmartDeals.map(d => `
-          <li class="deal-item">
-            <div class="deal-title" style="font-weight: bold; font-size: 1.2em; margin-bottom: 0.3em;">
-              ${d.title} are a <strong>$${d.moneyMakerAmount.toFixed(2)}</strong> Money Maker
-            </div>
-
-            ${d.productLink ? `<a href="${d.productLink}" target="_blank" rel="noopener noreferrer">Product Link</a>` : ''}
-
-            ${d.image ? `<div><img src="${d.image}" alt="${d.title}" style="max-width: 200px; margin: 10px 0;" onerror="this.style.display='none'"></div>` : ''}
-
-            <ul class="deal-breakdown">
-              ${d.breakdown.map(line => `<li>${line.includes('$') ? line.replace(/(\$\d+(\.\d+)?)/g, '<strong>$1</strong>') : line}</li>`).join('')}
-            </ul>
-
-            <ul class="deal-notes">
-              ${d.notes.map(note => `<li>${note}</li>`).join('')}
-            </ul>
-          </li>
-        `).join('');
+      list.innerHTML = walmartDeals.map(d => `
+  <li class="deal-item">
+    <div class="deal-title" style="font-weight: bold; font-size: 1.2em; margin-bottom: 0.3em;">
+      ${d.title}
+    </div>
+    ${d.productLink ? `<a href="${d.productLink}" target="_blank" rel="noopener noreferrer">Product Link</a>` : ""}
+    ${d.image ? `<div><img src="${d.image}" alt="${d.title}" style="max-width: 200px; margin: 5px 0;" onerror="this.style.display='none'" /></div>` : ""}
+    <ul class="deal-breakdown">
+      ${d.breakdown.map(line => `<li>${line}</li>`).join("")}
+    </ul>
+    <ul class="deal-notes">
+      ${d.notes.map(n => `<li>${n}</li>`).join("")}
+    </ul>
+  </li>
+`).join("");
       })
       .catch(err => {
         document.getElementById('storeDealList').innerHTML = `<li>Error loading deals: ${err.message}</li>`;
